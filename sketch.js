@@ -3,9 +3,10 @@
 */
 
 let BG;
+let canvas;
 
 function setup() {
-  let canvas = createCanvas(windowWidth, windowHeight);
+  canvas = createCanvas(windowWidth, windowHeight);
   canvas.style('z-index', '-1');
   canvas.position(0, 0);
   canvas.mouseWheel(e => { Controls.zoom(controls).worldZoom(e); renderLSys(); })
@@ -35,4 +36,15 @@ function renderLSys() {
     scale(controls.view.zoom);
     lsys.drawLsys();
   pop();
+}
+
+// download the canvas as a PNG image
+function downloadLsys() {
+  let name = prompt('Please enter a file name', `L_system.png`);
+
+  if (!name) {
+    return;
+  }
+
+  save(canvas, name);
 }

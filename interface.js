@@ -18,6 +18,11 @@ $(document).ready( function() {
 	$('#toggle-ui').click(() => {
 		$('#controls-wrapper').slideToggle();
 	});
+
+	// on save button, download canvas as image
+	$('#save-Lsystem').click(() => {
+		downloadLsys();
+	});
 });
 
 // load a preset into the visualizer

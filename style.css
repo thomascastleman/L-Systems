@@ -75,6 +75,7 @@ textarea {
 	padding: 5px;
 	padding-right: 15px;
 	padding-left: 15px;
+	margin-bottom: 5px;
 	border: none;
 	border-radius: 5px;
 }
@@ -91,11 +92,6 @@ textarea {
 
 #err-wrapper {
 	background-color: rgba(0,0,0, 0.4);
-}
-
-#generate {
-	margin-top: 10px;
-	margin-bottom: 10px;
 }
 
 h4 {

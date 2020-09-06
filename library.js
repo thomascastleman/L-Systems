@@ -84,3 +84,59 @@ const plant = {
     `] : pop\n`,
   iterations: 4
 }
+
+// from: http://paulbourke.net/fractals/lsys/
+const christmasTree = {
+  axiom: 
+    'rF',
+  productionRules: 
+    `F : F[+FF][-FF]F[-F][+F]F\n`,
+  actions:
+    `F : forward\n` + 
+    `+ : turn 25\n` +
+    `- : turn -25\n` +
+    `[ : push\n` + 
+    `] : pop\n` + 
+    `r : turn 180`,
+  iterations: 3
+}
+
+const crystal  = {
+  axiom: 
+    'F+F+F+F',
+  productionRules: 
+    `F : FF+F++F+F\n`,
+  actions:
+    `F : forward\n` + 
+    `+ : turn 90\n` +
+    `- : turn -90\n` +
+    `[ : push\n` + 
+    `] : pop\n`,
+  iterations: 3
+}
+
+const pentaplexity =  {
+  axiom: 
+    'F++F++F++F++F',
+  productionRules: 
+    `F : F++F++F|F-F++F\n`,
+  actions:
+    `F : forward\n` + 
+    `+ : turn 36\n` +
+    `- : turn -36\n` +
+    `| : turn 180\n`,
+  iterations: 3
+}
+
+const gosper =  {
+  axiom: 
+    'XF',
+  productionRules: 
+    `X : X+YF++YF-FX--FXFX-YF+\n` + 
+    `Y : -FX+YFYF++YF+FX--FX-Y\n`,
+  actions:
+    `F : forward\n` + 
+    `+ : turn 60\n` +
+    `- : turn -60\n`,
+  iterations: 4
+}
