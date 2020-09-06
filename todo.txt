@@ -1,0 +1,12 @@
+To do.
+
+- extend L system lang
+  - support context-sensitivity
+  - stochastic grammars (we already do it, but maybe make it explicit?)
+
+- extend graphics lang
+  - forward takes a scale factor
+  - change syntax for blocks
+
+misc:
+  - support custom bg color

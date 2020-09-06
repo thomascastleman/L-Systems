@@ -17,22 +17,44 @@ div {
 	font-family: Lucida Sans Unicode;
 }
 
+#left {
+	width: 330px;
+	float:left;
+}
+
+#right {
+	margin-left: 330px;
+
+}
+
 #settings {
-	background-color: rgba(0, 0, 0, 0.5);
-	width: 250px;
+	background-color: #43453b;
+	color: #F8F8F2;
+	width: 570px;
 	margin:3px;
 	user-select: none;
-	color: white;
 	padding: 6px;
 	border-radius: 5px;
+	clear: both;
+	overflow: auto;
 }
 
 #settings p {
 	margin: 0;
 }
 
+#controls-wrapper {
+	clear: both;
+	overflow: auto;
+}
+
 textarea {
 	font-family: monospace;
+}
+
+#axiom, textarea {
+	background-color: #272822;
+	color: #F8F8F2;
 }
 
 #library {
@@ -60,6 +82,10 @@ textarea {
 
 #line-color {
 	margin-bottom: 10px;
+}
+
+#toggle-ui {
+	clear: both;
 }
 
 #toggle-ui:hover {

@@ -73,7 +73,7 @@ function parseActions(rawText, cb) {
             line(0, STEP_LENGTH, 0, 0);
             translate(0, STEP_LENGTH);
           });
-  
+
         } else if (action == "push") {
           actionsList.push(() => {
             push();
@@ -83,25 +83,25 @@ function parseActions(rawText, cb) {
           actionsList.push(() => {
             pop();
           });
-  
+
         } else if (turn.test(action)) {
           let match = action.match(turn);
-  
+
           if (match.length < 2) {
             return cb(new Error(`Invalid use of turn syntax at "${lhs} : ${rhs}"`));
           }
-  
+
           const angle = parseInt(match[1], 10);
-  
+
           // ensure angle parsed successfully
           if (isNaN(angle)) {
             return cb(new Error(`Invalid argument to turn at "${lhs} : ${rhs}"`));
           }
-  
+
           actionsList.push(() => {
             rotate(angle);
           });
-  
+
         } else {
           return cb(new Error(`Invalid righthand side at: "${lhs} : ${rhs}". Must use a valid graphics command.`));
         }
@@ -156,6 +156,30 @@ function parseRawText(rawText, cb) {
 
 
 /* -------------------------------------------- */
+/*
+
+Axiom:
+X
+
+Productions:
+0 < 0 > 0 --> 1
+F --> FFF
+F --> 0
+
+Graphics:
+F = forward
+V = foward 3
+[ = push
+] = pop
++ = {
+  push
+  turn 120
+}
+- = turn -120
+
+*/
+
+
 
 // const testRules = 
 // `
