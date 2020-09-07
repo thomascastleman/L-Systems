@@ -2,52 +2,127 @@
   parsing.js: Functions for parsing the grammar inputted by the user
 */
 
-// parses the text from the production rules
-function parseProductionRules(rawText, cb) {
-  /*
-    Constructs hashtable of the following form:
-    {
-      “F” → [“F-G+F+G-F”, “FG”]
-      “G” → [“EGG”]
-      ...
+class ContextRule {
+  constructor(l, r, replacements) {
+    this.left = l;
+    this.right = r;
+    this.replacements = replacements;
+
+    // specificity is number of non-null context indicators in the rule
+    // (lookup opts for most specific matching rule)
+    this.specificity = 2 - (l === contexts.NULL ? 1 : 0)
+                         - (r === contexts.NULL ? 1 : 0);
+  }
+}
+
+class ProductionRules {
+  constructor() {
+    /* charToRules takes the form:
+        {
+          "<char>" --> [
+            ContextRule(<left1>, <right1>, [<replacements> ...]),
+            ContextRule(<left2>, <right2>, [<replacements> ...]),
+            ...
+          ],
+          ...
+        }
+
+        Left & right context indicators can take the form of:
+          - a char literal
+          - contexts.NULL
+          - contexts.INITIAL
+          - contexts.FINAL
+        */
+    this.charToRules = {};
+  }
+
+  // adds an entry in charToRules for this char if none exists,
+  // and adds the given rule to the rules list for this char
+  addRule(char, rule) {
+    // initialize entry for this char if none exists
+    if (!this.charToRules[char]) {
+      this.charToRules[char] = [rule];
+    } else {
+      this.charToRules[char].push(rule);
     }
-  */
+  }
 
-  // first, just extract what's on the left and right hand sides of each rule
-  parseRawText(rawText, (err, extractedRules) => {
-    if (err) return cb(err);
+  // Find a list of strings of grammar symbols that could replace
+  lookup(char, leftContext, rightContext) {
+    let rules = this.charToRules[char];
 
-    const rulesTable = {};
-    let lhs, rhs;
+    if (!rules) return null;  // no rules to match
 
-    for (let i = 0; i < extractedRules.length; i++) {
-      lhs = extractedRules[i].LHS;
-      rhs = extractedRules[i].RHS;
+    let mostSpecificMatch;
 
-      // map LHS to all possible RHS 
-      if (!rulesTable[lhs]) {
-        rulesTable[lhs] = [rhs];
-      } else {
-        rulesTable[lhs].push(rhs);
+    for (let i = 0; i < rules.length; i++) {
+      let r = rules[i];
+
+      // check if rule matches the given context
+      if ((r.left === contexts.NULL || r.left === leftContext) && 
+          (r.right === contexts.NULL || r.right === rightContext)) {
+        // check if this is the most specific match so far
+        if (!mostSpecificMatch || r.specificity > mostSpecificMatch.specificity) {
+          mostSpecificMatch = r;
+        }
       }
     }
 
-    cb(err, rulesTable);
-  });
+    if (!mostSpecificMatch) {
+      return null;  // no rules matched
+    }
+
+    return mostSpecificMatch.replacements;
+  }
 }
+
+// // parses the production rule text into a ProductionRules instance,
+// // which can lookup characters in context to find their possible replacements
+// function parseProductionRules(rawText, cb) {
+//   /*
+//     Constructs hashtable of the following form:
+//     {
+//       “F” → [“F-G+F+G-F”, “FG”]
+//       “G” → [“EGG”]
+//       ...
+//     }
+//   */
+
+//   // first, just extract what's on the left and right hand sides of each rule
+//   parseRawText(rawText, (err, extractedRules) => {
+//     if (err) return cb(err);
+
+//     const rulesTable = {};
+//     let lhs, rhs;
+
+//     for (let i = 0; i < extractedRules.length; i++) {
+//       lhs = extractedRules[i].LHS;
+//       rhs = extractedRules[i].RHS;
+
+//       // map LHS to all possible RHS 
+//       if (!rulesTable[lhs]) {
+//         rulesTable[lhs] = [rhs];
+//       } else {
+//         rulesTable[lhs].push(rhs);
+//       }
+//     }
+
+//     cb(err, rulesTable);
+//   });
+// }
 
 // parses the text from the actions definitions
 function parseActions(rawText, cb) {
   /*
     Constructs hashtable of the following form:
     {
-      “+” → () => { rotate(120); }
-      “-” → () => { rotate(-120); }
-      “F” → () => { line(0, …); translate(...); }
-      “[“ → () => { push(); }
+      “+” → [() => { rotate(120); }]
+      “-” → [() => { rotate(-120); }]
+      “F” → [() => { line(0, …); }, () => { translate(...); }]
+      “[“ → [() => { push(); }]
     }
   */
-  
+
   parseRawText(rawText, (err, extractedRules) => {
     if (err) return cb(err);
 
@@ -153,9 +228,35 @@ function parseRawText(rawText, cb) {
 }
 
 
-
-
 /* -------------------------------------------- */
+
+let c = new ContextRule("X", contexts.NULL, ["X", "F"]);
+
+let c1 = "A";
+let r1 = new ContextRule("0", "1", ["B"]);
+let r2 = new ContextRule(contexts.NULL, contexts.NULL, ["C"]);
+
+let c2 = "B";
+let r3 = new ContextRule("3", "3", ["A", "C"]);
+let r4 = new ContextRule(contexts.INITIAL, contexts.NULL, ["C"]);
+
+let c3 = "C";
+let r5 = new ContextRule("0", "2", ["A"]);
+let r6 = new ContextRule(contexts.NULL, "2", ["B"]);
+let r7 = new ContextRule(contexts.NULL, contexts.NULL, ["F"]);
+
+let p = new ProductionRules();
+
+p.addRule("A", r1);
+p.addRule("B", r3);
+p.addRule("A", r2);
+p.addRule("B", r4);
+
+p.addRule("C", r5);
+p.addRule("C", r6);
+p.addRule("C", r7);
+
+
 /*
 
 Axiom:
@@ -164,7 +265,8 @@ X
 Productions:
 0 < 0 > 0 --> 1
 F --> FFF
-F --> 0
+  | FX
+F < F > F --> XYZ | ZY
 
 Graphics:
 F = forward
@@ -172,8 +274,8 @@ V = foward 3
 [ = push
 ] = pop
 + = {
-  push
-  turn 120
+  push;
+  turn 120;
 }
 - = turn -120
 
