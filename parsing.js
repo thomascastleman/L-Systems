@@ -14,6 +14,7 @@ class ContextRule {
 }
 
 class ProductionRules {
+
   constructor() {
     /* charToRules takes the form:
         {
@@ -72,6 +73,38 @@ class ProductionRules {
 
     return mostSpecificMatch.replacements;
   }
+
+}
+
+class GraphicsInstructions {
+
+  constructor() {
+    /*
+      charToInst maps characters to their graphical interpretation
+      (list of closures which carry out the specified turtle graphics operations)
+      {
+        “+” → [() => { rotate(120); }]
+        “-” → [() => { rotate(-120); }]
+        “F” → [() => { line(0, …); }, () => { translate(...); }]
+        “[“ → [() => { push(); }]
+      }
+    */
+    this.charToInst = {};
+  }
+
+  // attach a graphics instruction to a character
+  addInstruction(char, insts) {
+    if (!this.charToInst[char]) {
+      this.charToInst[char] = insts;
+    } else {
+      throw new Error(`Graphical meaning of '${char}' defined multiple times`);
+    }
+  }
+
+  lookup(char) {
+    return this.charToInst[char];
+  }
+
 }
 
 // // parses the production rule text into a ProductionRules instance,
@@ -109,121 +142,121 @@ class ProductionRules {
 //   });
 // }
 
-// parses the text from the actions definitions
-function parseActions(rawText, cb) {
-  /*
-    Constructs hashtable of the following form:
-    {
-      “+” → [() => { rotate(120); }]
-      “-” → [() => { rotate(-120); }]
-      “F” → [() => { line(0, …); }, () => { translate(...); }]
-      “[“ → [() => { push(); }]
-    }
-  */
+// // parses the text from the actions definitions
+// function parseActions(rawText, cb) {
+//   /*
+//     Constructs hashtable of the following form:
+//     {
+//       “+” → [() => { rotate(120); }]
+//       “-” → [() => { rotate(-120); }]
+//       “F” → [() => { line(0, …); }, () => { translate(...); }]
+//       “[“ → [() => { push(); }]
+//     }
+//   */
 
-  parseRawText(rawText, (err, extractedRules) => {
-    if (err) return cb(err);
+//   parseRawText(rawText, (err, extractedRules) => {
+//     if (err) return cb(err);
 
-    const actionsTable = {};
-    let lhs, rhs;
-    let righthandSides, actionsList;
+//     const actionsTable = {};
+//     let lhs, rhs;
+//     let righthandSides, actionsList;
 
-    const turn = /turn(-?\d+)/;   // regular expr to extract the angle param from turn action
+//     const turn = /turn(-?\d+)/;   // regular expr to extract the angle param from turn action
 
-    for (let i = 0; i < extractedRules.length; i++) {
-      lhs = extractedRules[i].LHS;
-      rhs = extractedRules[i].RHS;
-      righthandSides = rhs.split(',');  // split possibly multiple actions by comma
-      actionsList = [];
+//     for (let i = 0; i < extractedRules.length; i++) {
+//       lhs = extractedRules[i].LHS;
+//       rhs = extractedRules[i].RHS;
+//       righthandSides = rhs.split(',');  // split possibly multiple actions by comma
+//       actionsList = [];
 
-      // for each of the actions associated with this symbol
-      for (let j = 0; j < righthandSides.length; j++) {
-        let action = righthandSides[j];
+//       // for each of the actions associated with this symbol
+//       for (let j = 0; j < righthandSides.length; j++) {
+//         let action = righthandSides[j];
 
-        if (action == "forward") {
-          actionsList.push(() => {
-            // always step forward by 10 --scale() will handle the rest
-            line(0, STEP_LENGTH, 0, 0);
-            translate(0, STEP_LENGTH);
-          });
+//         if (action == "forward") {
+//           actionsList.push(() => {
+//             // always step forward by 10 --scale() will handle the rest
+//             line(0, STEP_LENGTH, 0, 0);
+//             translate(0, STEP_LENGTH);
+//           });
 
-        } else if (action == "push") {
-          actionsList.push(() => {
-            push();
-          });
+//         } else if (action == "push") {
+//           actionsList.push(() => {
+//             push();
+//           });
   
-        } else if (action == "pop") {
-          actionsList.push(() => {
-            pop();
-          });
+//         } else if (action == "pop") {
+//           actionsList.push(() => {
+//             pop();
+//           });
 
-        } else if (turn.test(action)) {
-          let match = action.match(turn);
+//         } else if (turn.test(action)) {
+//           let match = action.match(turn);
 
-          if (match.length < 2) {
-            return cb(new Error(`Invalid use of turn syntax at "${lhs} : ${rhs}"`));
-          }
+//           if (match.length < 2) {
+//             return cb(new Error(`Invalid use of turn syntax at "${lhs} : ${rhs}"`));
+//           }
 
-          const angle = parseInt(match[1], 10);
+//           const angle = parseInt(match[1], 10);
 
-          // ensure angle parsed successfully
-          if (isNaN(angle)) {
-            return cb(new Error(`Invalid argument to turn at "${lhs} : ${rhs}"`));
-          }
+//           // ensure angle parsed successfully
+//           if (isNaN(angle)) {
+//             return cb(new Error(`Invalid argument to turn at "${lhs} : ${rhs}"`));
+//           }
 
-          actionsList.push(() => {
-            rotate(angle);
-          });
+//           actionsList.push(() => {
+//             rotate(angle);
+//           });
 
-        } else {
-          return cb(new Error(`Invalid righthand side at: "${lhs} : ${rhs}". Must use a valid graphics command.`));
-        }
-      }
+//         } else {
+//           return cb(new Error(`Invalid righthand side at: "${lhs} : ${rhs}". Must use a valid graphics command.`));
+//         }
+//       }
 
-      // add all those funcs to actions for this symbol
-      actionsTable[lhs] = actionsList;
-    }
+//       // add all those funcs to actions for this symbol
+//       actionsTable[lhs] = actionsList;
+//     }
 
-    cb(null, actionsTable);
-  });
-}
+//     cb(null, actionsTable);
+//   });
+// }
 
-/*  extract the left- and righthand sides from 
-    the raw text in the productions/actions inputs */
-function parseRawText(rawText, cb) {
-  if (rawText == "") return cb(new Error("There were no production rules entered!"));
+// /*  extract the left- and righthand sides from 
+//     the raw text in the productions/actions inputs */
+// function parseRawText(rawText, cb) {
+//   if (rawText == "") return cb(new Error("There were no production rules entered!"));
 
-  const split = rawText.split("\n");
-  const ret = [];
+//   const split = rawText.split("\n");
+//   const ret = [];
 
-  for (let i = 0; i < split.length; i++) {
-    let line = split[i];
-    let splitByColon = line.replace(/\s/g, '').split(":");
+//   for (let i = 0; i < split.length; i++) {
+//     let line = split[i];
+//     let splitByColon = line.replace(/\s/g, '').split(":");
 
-    if (line == '') continue; // ignore blank lines
+//     if (line == '') continue; // ignore blank lines
 
-    if (splitByColon.length != 2) {
-      return cb(new Error(`The line "${line}" must have a single colon separating the lefthand side from the righthand side`));
-    }
+//     if (splitByColon.length != 2) {
+//       return cb(new Error(`The line "${line}" must have a single colon separating the lefthand side from the righthand side`));
+//     }
 
-    let lhs = splitByColon[0], rhs = splitByColon[1];
+//     let lhs = splitByColon[0], rhs = splitByColon[1];
 
-    if (!lhs || !rhs) {
-      return cb(new Error(`The line "${line}" errored: Both the left-hand side and right-hand side must be non-empty`));
-    }
+//     if (!lhs || !rhs) {
+//       return cb(new Error(`The line "${line}" errored: Both the left-hand side and right-hand side must be non-empty`));
+//     }
 
-    if (lhs.length != 1) {
-      return cb(new Error(`The line "${line}" errored: The left-hand side must be only one character`));
-    }
+//     if (lhs.length != 1) {
+//       return cb(new Error(`The line "${line}" errored: The left-hand side must be only one character`));
+//     }
 
-    ret.push({
-      LHS: splitByColon[0],
-      RHS: splitByColon[1]
-    });
-  }
+//     ret.push({
+//       LHS: splitByColon[0],
+//       RHS: splitByColon[1]
+//     });
+//   }
 
-  cb(null, ret);
-}
+//   cb(null, ret);
+// }
 
 
 /* -------------------------------------------- */
