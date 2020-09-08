@@ -2,6 +2,22 @@
 	interface.js: Controls for interacting with the L-system
 */
 
+function setLineColor() {
+	try {
+		lineColor = color(document.getElementById('line-color').value);
+	} catch (e) {
+		lineColor = color('#559c00');	// default to plant-green
+	}
+}
+
+function setBGColor() {
+	try {
+		BG = color(document.getElementById('bg-color').value);
+	} catch (e) {
+		BG = color('#ffffff');	// default to white
+	}
+}
+
 $(document).ready( function() {
 	// on generate, construct L system from the inputs
 	$('#generate').click(() => {
@@ -10,13 +26,13 @@ $(document).ready( function() {
 
 	// on color input change, redraw the L system with that line color
 	$('#line-color').change(() => {
-		lineColor = color(document.getElementById('line-color').value);
+		setLineColor();
 		renderLSys();
 	});
 
 	// on color input change, redraw the L system with that line color
 	$('#bg-color').change(() => {
-		BG = color(document.getElementById('bg-color').value);
+		setBGColor();
 		renderLSys();
 	});
 
@@ -50,6 +66,7 @@ $(document).ready( function() {
 			this.selectionEnd = start + 1;
 		}
 	});
+
 });
 
 // load a preset into the visualizer

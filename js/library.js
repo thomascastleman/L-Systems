@@ -1,8 +1,11 @@
 /*
-  library.js: Library of L-Systems that we like
-  From: https://en.wikipedia.org/wiki/L-system
+  library.js: Library of L-Systems we like
+  From various sources:
+  - https://en.wikipedia.org/wiki/L-system
+  - http://paulbourke.net/fractals/lsys/
 */
 
+/* ---------------------- Context-Sensitive ---------------------- */
 const dragonCurve = {
   axiom: 
     'FX',
@@ -91,7 +94,6 @@ const plant = {
   iterations: 4
 }
 
-// from: http://paulbourke.net/fractals/lsys/
 const christmasTree = {
   axiom: 
     'rF',
@@ -159,9 +161,10 @@ const hilbert = {
   iterations: 5 
 }
 
-const sensitivePlant = {
+/* ---------------------- Context-Sensitive ---------------------- */
+const tallPlant = {
   axiom: 'F0F1F1',
-  ignore: '-+F[]',
+  ignore: '-+F][',
   productionRules: 
     `0 < 0 > 0 ==> 1\n` +
     `0 < 0 > 1 ==> 0\n` +

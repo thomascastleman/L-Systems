@@ -23,8 +23,22 @@ h5 {
 	font-size: 14px;
 }
 
+table {
+	width: 70%;
+	margin: auto;
+
+}
+
+table tr {
+	text-align: center;
+}
+
+table td {
+	padding: 0px !important;
+}
+
 #left {
-	width: 330px;
+	width: 320px;
 	float:left;
 }
 
@@ -34,7 +48,7 @@ h5 {
 }
 
 #settings {
-	background-color: #43453b;
+	background-color: rgba(67, 69, 59, 0.80);
 	color: #F8F8F2;
 	width: 570px;
 	margin:3px;
@@ -54,14 +68,22 @@ h5 {
 	overflow: auto;
 }
 
-textarea {
-	font-family: monospace;
-}
-
-#axiom, #ignore, textarea {
+#axiom, #ignore, textarea, #iterations {
 	background-color: #272822;
 	color: #F8F8F2;
+	font-family: "Lucida Console", Monaco, monospace;
+	font-size: 13px;
 }
+
+#axiom, #ignore {
+	margin-bottom: 5px;
+	padding: 3px;
+	border: none;
+	border-radius: 3px;
+}
+
+#axiom { width: 230px; }
+#ignore { width: 176px; }
 
 #library {
 	margin-top: 10px;
@@ -83,11 +105,10 @@ textarea {
 
 #iterations {
 	width: 45px;
-	margin-bottom: 10px;
-}
-
-#line-color {
-	margin-bottom: 10px;
+	border: none;
+	padding: 3px;
+	border-radius: 3px;
+	font-size: 14px;
 }
 
 #toggle-ui {
@@ -103,7 +124,8 @@ textarea {
 	font-size: 13px;
 	display: inline-block;
 	background-color: rgba(0,0,0, 0.4);
-	width: 200px;
+	width: 120px;
+	height: 30px;
 	color: white;
 	padding: 5px;
 	padding-right: 15px;

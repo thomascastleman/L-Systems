@@ -11,19 +11,21 @@ function setup() {
   canvas.position(0, 0);
   canvas.mouseWheel(e => { Controls.zoom(controls).worldZoom(e); renderLSys(); })
   
-  lineColor = color(85, 156, 0);  // start it out all plant-y
+  setLineColor();
+  setBGColor();
+
   angleMode(DEGREES);
   stroke(lineColor);
   strokeWeight(2);
 
-  BG = color(255);
-
-  // move to center
-  controls.view.x = width / 2;
+  // situate the L system near the righthand side of the window
+  controls.view.x = 0.65 * width;
   controls.view.y = height * (5 / 6);
 
-  lsys = new Lsystem(); // initialize the L-system
-  loadLibraryItem(plant);	// default to plant
+  if (!lsys) {
+    lsys = new Lsystem(); // initialize the L-system
+    loadLibraryItem(plant);	// default to plant
+  }
 }
 
 // render the L system wherever it needs to be
@@ -47,4 +49,10 @@ function downloadLsys() {
   }
 
   save(canvas, name);
+}
+
+// resize the canvas/re-render anytime the window size is changed
+function windowResized() {
+  resizeCanvas(windowWidth, windowHeight);
+  renderLSys();
 }

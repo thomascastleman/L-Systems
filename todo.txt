@@ -1,1 +1,4 @@
 To do.
+
+- clean up
+- update README
