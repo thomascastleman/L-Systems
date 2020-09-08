@@ -1,5 +1,4 @@
 To do.
 
-- add 'jump'
 - clean up
 - update README

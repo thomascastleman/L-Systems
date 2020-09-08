@@ -125,15 +125,30 @@ class GraphicsParser extends Parser {
 
     while (!this.eof()) {
       let s = this.parseStmt();
-      gi.addInstruction(s.char, s.operators);
+
+      // record what graphical operators are attached to the symbol/how much they change the stack
+      gi.addInstruction(s.char, s.operators.map(o => o.closure));
+      gi.addStackChange(s.char, this.totalStackChange(s.operators));
+
       this.stmtNum++;
     }
 
     return gi;
   }
 
+  // compute the total stack change of a sequence of operators
+  totalStackChange(operators) {
+    let total = 0;
+
+    for (let i = 0; i < operators.length; i++) {
+      total += operators[i].stackChange;
+    }
+
+    return total;
+  }
+
   // Parse a single statement assigning graphical meaning
-  // Returns { char, operators } where operators is a list of closures
+  // Returns { char, operators } where operators is a list of operator objects (closure/stack change)
   // representing graphics operations that correspond to char
   parseStmt() {
     let char = this.next();
@@ -185,7 +200,9 @@ class GraphicsParser extends Parser {
   //  - turn
   //  - push
   //  - pop
-  // Returns a 0-ary closure that performs the indicated operation
+  // Returns an object of the form:
+  //  { closure: 0-ary closure that performs the indicated operation,
+  //    stackChange: amount that this instruction changes the stack } 
   parsePrimOp() {
     let next = this.next();
 
@@ -194,28 +211,43 @@ class GraphicsParser extends Parser {
         var scale = next.lexeme;
 
         // draw line/step forward based on step size & user-indicated scale factor
-        return () => {
-          line(0, STEP_LENGTH * scale, 0, 0);
-          translate(0, STEP_LENGTH * scale);
+        return {
+          closure: () => {
+            line(0, STEP_LENGTH * scale, 0, 0);
+            translate(0, STEP_LENGTH * scale);
+          },
+          stackChange: 0
         };
 
       case 'leap':
         var scale = next.lexeme;
 
         // move without drawing a line
-        return () => {
-          translate(0, STEP_LENGTH * scale);
+        return {
+          closure: () => {
+            translate(0, STEP_LENGTH * scale);
+          },
+          stackChange: 0
         };
 
       case 'turn':
         let angle = next.lexeme;
-        return () => { rotate(angle) };
+        return {
+          closure: () => { rotate(angle) },
+          stackChange: 0
+        };
 
       case 'push':
-        return () => { push() };
+        return {
+          closure: () => { push() },
+          stackChange: 1
+        };
 
       case 'pop':
-        return () => { pop() };
+        return {
+          closure: () => { pop() },
+          stackChange: -1
+        };
 
       default:
         throw new Error(`Expected a primitive graphics operation, got ${next.name}` + 

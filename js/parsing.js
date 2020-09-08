@@ -90,6 +90,18 @@ class GraphicsInstructions {
       }
     */
     this.charToInst = {};
+
+    /*
+      charToStackChange maps chars to how much push/pop the stack,
+      and in what direction. This is so we can find contexts appropriately
+      such that "daughter branches do not belong to the context of the mother branch"
+
+      ie. A push instruction has stack change 1, pop has -1.
+          A block instruction with push then pop has change 0.
+          Block instruction with only two pops has change -2.
+          etc.
+     */
+    this.charToStackChange = {};
   }
 
   // attach a graphics instruction to a character
@@ -103,6 +115,21 @@ class GraphicsInstructions {
 
   lookup(char) {
     return this.charToInst[char];
+  }
+
+  // record a char's stack change
+  addStackChange(char, change) {
+    if (!this.charToStackChange[char]) {
+      this.charToStackChange[char] = change;
+    } else {
+      throw new Error(`Conflicting stack changes for '${char}': ` + 
+        `${this.charToStackChange[char]} and ${change}`);
+    }
+  }
+
+  lookupStackChange(char) {
+    // return stack change or default to 0 if no graphical meaning
+    return this.charToStackChange[char] || 0;
   }
 
 }
