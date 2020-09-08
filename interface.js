@@ -50,6 +50,7 @@ $(document).ready( function() {
 function loadLibraryItem(params) {
 	// update all params in the UI
 	$('#axiom').val(params.axiom);
+	$('#ignore').val(params.ignore);
 	$('#prod-rules').val(params.productionRules);
 	$('#graphics-instructs').val(params.graphics);
 	$('#iterations').val(params.iterations);
@@ -64,6 +65,7 @@ function makeLSystem() {
 
 	// extract raw text from inputs
 	const axiom = $('#axiom').val();
+	const ignore = $('#ignore').val();
 	const prText = $('#prod-rules').val();
 	const giText = $('#graphics-instructs').val();
 	const iterations = parseInt($('#iterations').val(), 10);
@@ -81,6 +83,7 @@ function makeLSystem() {
 
 			// update rest of params
 			lsys.axiom = axiom;
+			lsys.ignore = ignore;
 			lsys.iteration = iterations;
 
 			// calculate a new string to be displayed

@@ -52,7 +52,7 @@ textarea {
 	font-family: monospace;
 }
 
-#axiom, textarea {
+#axiom, #ignore, textarea {
 	background-color: #272822;
 	color: #F8F8F2;
 }

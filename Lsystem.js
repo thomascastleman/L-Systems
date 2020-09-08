@@ -8,6 +8,7 @@ class Lsystem {
     this.axiom;
     this.productionRules;
     this.graphicsInstructions;
+    this.ignore;
     this.iteration = 10;
     this.Lstring = '';
   }
@@ -25,9 +26,13 @@ class Lsystem {
       for (var c = 0; c < originalAxiom.length; c++){
         sym = originalAxiom[c];
 
+        // find context for this symbol
+        let leftCtxt = this.findContext(originalAxiom, c, (i) => i < 0, 
+          contexts.INITIAL, (i) => i - 1);
+        let rightCtxt = this.findContext(originalAxiom, c, (i) => i >= originalAxiom.length, 
+          contexts.FINAL, (i) => i + 1);
+
         // lookup possible replacement strings for this symbol within this context
-        let leftCtxt = c == 0 ? contexts.INITIAL : originalAxiom[c - 1];
-        let rightCtxt = c == originalAxiom.length - 1 ? contexts.FINAL : originalAxiom[c + 1];
         let possibleRHS = this.productionRules.lookup(sym, leftCtxt, rightCtxt);
 
         if (possibleRHS) {
@@ -50,6 +55,22 @@ class Lsystem {
 
     }
     this.Lstring = originalAxiom;
+  }
+
+  // move in one direction down the string until a non-ignored symbol is encountered
+  // or an extreme (start/end), and use this as the context
+  findContext(string, i, isPastExtreme, extremeCtxt, move) {
+    let next = move(i);
+
+    while (true) {
+      if (isPastExtreme(next))
+        return extremeCtxt;
+
+      if (!this.ignore.includes(string[next]))
+        return string[next];
+
+      next = move(next);
+    }
   }
 
   // display the L system to the world

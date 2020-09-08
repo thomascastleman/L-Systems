@@ -1,12 +1,7 @@
 To do.
 
 - extend L system lang
-  - support context-sensitivity
-
-- extend graphics lang
-  - forward takes a scale factor
-  - change syntax for blocks / =
-  - make sure it errors when multiple rules have same LHS (use blocks instead)
+  - support ignoring of symbols when looking for context
 
 misc:
   - support custom bg color
