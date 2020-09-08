@@ -1,7 +1,7 @@
 # L-Systems
 L-systems for the people, by the people.
 
-![](imgs/plant_demo.png)
+![](imgs/ui.png)
 
 This interactive L-system visualization allows the user to explore L-systems, by defining the rules of the system. The interface allows the user to customize three components:
 1. the axiom

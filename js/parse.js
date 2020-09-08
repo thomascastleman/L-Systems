@@ -1,5 +1,7 @@
+/*
+  parse.js: Superclass for both parsers, includes language-independent utilities
+*/
 
-// Class encapsulating language-independent parsing functions
 class Parser {
   constructor() {}
 

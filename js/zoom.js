@@ -1,5 +1,5 @@
 /*
-  zoom.js: Zooming/scaling of L system view
+  zoom.js: Zooming/scaling of L system view on scroll
   Adapted from: https://codepen.io/amir-s/pen/jzqZdG?editors=0010
 */
 

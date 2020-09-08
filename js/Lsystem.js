@@ -1,5 +1,5 @@
 /*
-  Lsystem.js: Class for working with the L-system itself
+  Lsystem.js: The L-System model itself
 */
 
 class Lsystem {
@@ -22,9 +22,6 @@ class Lsystem {
     for (var i = 0; i < this.iteration; i++){
       newAxiom = ''
 
-      // console.log(`--------------------------- NEW ITERATION ${i} ---------------------------`);
-      // console.log(`String: '${originalAxiom}'`);
-
       // expand each symbol based on its production rules
       for (var c = 0; c < originalAxiom.length; c++){
         sym = originalAxiom[c];
@@ -43,22 +40,6 @@ class Lsystem {
           (sc) => sc > 0,
           (sc) => sc < 0,
           (i) => i + 1);
-
-        // // debug!
-        // function ctxt(c) {
-        //   if (typeof c == "string")
-        //     return c;
-
-        //   switch (c) {
-        //     case contexts.NULL:
-        //       return 'NULL';
-        //     case contexts.INITIAL:
-        //       return 'INIT';
-        //     case contexts.FINAL:
-        //       return 'FIN';
-        //   }
-        // }
-        // console.log(`Char: '${sym}' lc: ${ctxt(leftCtxt)}, rc: ${ctxt(rightCtxt)}`);
 
         // lookup possible replacement strings for this symbol within this context
         let possibleRHS = this.productionRules.lookup(sym, leftCtxt, rightCtxt);

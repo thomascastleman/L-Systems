@@ -1,3 +1,6 @@
+/*
+  production_parser.js: Parser/data structures for the production rules
+*/
 
 /* -------------- Production Rules Grammar --------------
 
@@ -22,6 +25,7 @@
 
 */
 
+// Parser for user-defined production rules of the L system
 class ProductionParser extends Parser {
 
   constructor(text) {
@@ -161,26 +165,83 @@ class ProductionParser extends Parser {
 
 }
 
-// let text = 
-// `
-// X ==> F+[[X]-X]-F[-FX]+X
-// F ==> FF
+// ContextRule encodes a single production rule with context,
+// where the given char, when appearing in the given left/right context,
+// can be replaced with any of the given replacement strings
+class ContextRule {
+  constructor(c, l, r, replacements) {
+    this.char = c;
+    this.left = l;
+    this.right = r;
+    this.replacements = replacements;
 
-// 0<C>2 ==> \empty
+    // specificity is number of non-null context indicators in the rule
+    // (lookup opts for most specific matching rule)
+    this.specificity = 2 - (l === contexts.NULL ? 1 : 0)
+                         - (r === contexts.NULL ? 1 : 0);
+  }
+}
 
-// 0 < 1 > 1 ==> 555
-//   | \empty
-//   | NEAT
-// N==>O | A
+// Class to manage mapping of characters+contexts to their replacements
+class ProductionRules {
 
-// 1 > 0 ==> XY
+  constructor() {
+    /* charToRules takes the form:
+        {
+          "<char>" --> [
+            ContextRule(<left1>, <right1>, [<replacements> ...]),
+            ContextRule(<left2>, <right2>, [<replacements> ...]),
+            ...
+          ],
+          ...
+        }
 
-// `;
+        Left & right context indicators can take the form of:
+          - a char literal
+          - contexts.NULL
+          - contexts.INITIAL
+          - contexts.FINAL
+        */
+    this.charToRules = {};
+  }
 
-// try {
-//   let parser = new ProductionParser(text);
-//   console.log(parser.tokens);
-//   console.log(parser.parse());
-// } catch (e) {
-//   console.log(e);
-// }
+  // adds an entry in charToRules for this char if none exists,
+  // and adds the given rule to the rules list for this char
+  addRule(char, rule) {
+    // initialize entry for this char if none exists
+    if (!this.charToRules[char]) {
+      this.charToRules[char] = [rule];
+    } else {
+      this.charToRules[char].push(rule);
+    }
+  }
+
+  // Find a list of strings of grammar symbols that could replace
+  lookup(char, leftContext, rightContext) {
+    let rules = this.charToRules[char];
+
+    if (!rules) return null;  // no rules to match
+
+    let mostSpecificMatch;
+
+    for (let i = 0; i < rules.length; i++) {
+      let r = rules[i];
+
+      // check if rule matches the given context
+      if ((r.left === contexts.NULL || r.left === leftContext) && 
+          (r.right === contexts.NULL || r.right === rightContext)) {
+        // check if this is the most specific match so far
+        if (!mostSpecificMatch || r.specificity > mostSpecificMatch.specificity) {
+          mostSpecificMatch = r;
+        }
+      }
+    }
+
+    if (!mostSpecificMatch) {
+      return null;  // no rules matched
+    }
+
+    return mostSpecificMatch.replacements;
+  }
+
+}

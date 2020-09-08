@@ -1,4 +1,9 @@
+/*
+  lex.js: Lexer for both production/graphics languages
+*/
 
+// Container for smallest meaningful units within either the 
+// production/graphics languages. The lexer produces a list of tokens
 class Token {
   constructor(name, lexeme) {
     this.name = name;
@@ -6,6 +11,7 @@ class Token {
   }
 }
 
+// Lexer matches a character stream against patterns to produce tokens
 class Lexer {
 
   constructor(patterns, makeToken) {
@@ -43,9 +49,8 @@ class Lexer {
       }
 
       // failed to match any token patterns
-      if (!chosenToken || !maximalMunchSize) {
+      if (!chosenToken || !maximalMunchSize)
         throw new Error(`Invalid token: '${this.retrieveInvalid(text)}'`);
-      }
 
       // include all non-whitespace tokens
       if (chosenToken.name != 'whitespace')
@@ -58,49 +63,12 @@ class Lexer {
     return tokens;
   }
 
-  // read chars until whitespace from front of text
+  // Read chars until whitespace from front of text
+  // (used to retrieve what we think is an invalid token for errors)
   retrieveInvalid(text) {
     let m = text.match(new RegExp('^[^\\s]*'));
-
     if (!m || m.length < 1) return text;
-
     return m[0];
   }
 
 }
-
-// let prgm = 
-// `
-// 4 <
-
-// 1   > 5==>222
-// F==>41F
-// `;
-
-// let l = new Lexer([
-//   { re: new RegExp('^==>'), name: 'arrow' },
-//   { re: new RegExp('^\\|'), name: 'pipe' },
-//   { re: new RegExp('^([^<>\\s])\\s*<'), name: 'left-context' },
-//   { re: new RegExp('^>\\s*([^<>\\s])'), name: 'right-context' },
-//   { re: new RegExp('^\\empty'), name: 'empty' },
-//   { re: new RegExp('^([^<>\\s$^=|]+)'), name: 'string' },
-//   { re: new RegExp('^\\s*'), name: 'whitespace' }
-// ],
-// (pattern, match) => {
-//   switch (pattern.name) {
-//     case 'left-context':
-//     case 'right-context':
-//     case 'string':
-//       // use first capture group as lexeme
-//       return new Token(pattern.name, match[1]);
-
-//     default:
-//       return new Token(pattern.name);
-
-//   }
-// });
-
-// l.lex(prgm, (err, tokens) => {
-//   if (err) console.log(err);
-//   console.log(tokens);
-// });

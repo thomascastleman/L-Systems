@@ -1,3 +1,6 @@
+/*
+  graphics_parser.js: Parser/data structures for dealing with graphics instructions
+*/
 
 /* -------------- Graphics Instructions Grammar --------------
 
@@ -23,6 +26,7 @@
 
 */
 
+// Parser for the user-defined graphics instructions
 class GraphicsParser extends Parser {
 
   constructor(text) {
@@ -37,7 +41,7 @@ class GraphicsParser extends Parser {
     // turn 'turn <angle>'
     // push 'push'
     // pop 'pop'
-    // char [^\\s{}]
+    // char
     // whitespace
 
     // matching whitespace without newlines in forward/turn from:
@@ -266,33 +270,64 @@ class GraphicsParser extends Parser {
 
 }
 
-// let prgm = 
-// `
-// F = forward 0.5
-// T = turn 120
-// [ = push
-// ] = pop
+// Class to manage mapping of characters to their graphical 
+// interpretations, as well as how they push/pop the stack
+class GraphicsInstructions {
 
-// X = {turn 0 push pop}
+  constructor() {
+    /*
+      charToInst maps characters to their graphical interpretation
+      (list of closures which carry out the specified turtle graphics operations)
+      ie.
+      {
+        “+” → [() => { rotate(120); }]
+        “-” → [() => { rotate(-120); }]
+        “F” → [() => { line(0, …); }, () => { translate(...); }]
+        “[“ → [() => { push(); }],
+        ...
+      }
+    */
+    this.charToInst = {};
 
-// S = {
-//   turn 10 
-//   push
+    /*
+      charToStackChange maps chars to how much push/pop the stack,
+      and in what direction. This is so we can find contexts appropriately
+      such that "daughter branches do not belong to the context of the mother branch"
 
-//   forward 5
-//   pop
-//   turn -8
+      ie. A push instruction has stack change 1, pop has -1.
+          A block instruction with push then pop has change 0.
+          Block instruction with only two pops has change -2.
+          etc.
+     */
+    this.charToStackChange = {};
+  }
 
-// }
+  // attach a graphics instruction to a character
+  addInstruction(char, insts) {
+    if (!this.charToInst[char]) {
+      this.charToInst[char] = insts;
+    } else {
+      throw new Error(`Graphical meaning of '${char}' defined multiple times`);
+    }
+  }
 
-// y=forward 10
-// x =      forward -120.452138
-// z    =turn -0.1239`;
+  lookup(char) {
+    return this.charToInst[char];
+  }
 
-// try {
-//   let g = new GraphicsParser(prgm);
-//   console.log(g.tokens);
-//   console.log(g.parse());
-// } catch (e) {
-//   console.log(e);
-// }
+  // record a char's stack change
+  addStackChange(char, change) {
+    if (!this.charToStackChange[char]) {
+      this.charToStackChange[char] = change;
+    } else {
+      throw new Error(`Conflicting stack changes for '${char}': ` + 
+        `${this.charToStackChange[char]} and ${change}`);
+    }
+  }
+
+  lookupStackChange(char) {
+    // return stack change or default to 0 if no graphical meaning
+    return this.charToStackChange[char] || 0;
+  }
+
+}
