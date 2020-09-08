@@ -2,11 +2,10 @@ To do.
 
 - extend L system lang
   - support context-sensitivity
-  - stochastic grammars (we already do it, but maybe make it explicit?)
 
 - extend graphics lang
   - forward takes a scale factor
-  - change syntax for blocks
+  - change syntax for blocks / =
   - make sure it errors when multiple rules have same LHS (use blocks instead)
 
 misc:

@@ -71,25 +71,27 @@ function makeLSystem() {
 	if (isNaN(iterations) || iterations < 0) return showError('Iterations', 'Invalid number of iterations');
 	if (!axiom) return showError('Axiom', 'The axiom cannot be empty');
 
-	// attempt to parse inputted production rules
-	parseProductionRules(productionRules, (err, rules) => {
-		if (err) return showError('Production Rule Parse Error', err.message);
+	// WIP
+	
+	// // attempt to parse inputted production rules
+	// parseProductionRules(productionRules, (err, rules) => {
+	// 	if (err) return showError('Production Rule Parse Error', err.message);
 
-		// attempt to parse inputted graphics instructions
-		parseActions(graphicsInstructions, (err, actions) => {
-			if (err) return showError('Graphics Instructions Parse Error', err.message);
+	// 	// attempt to parse inputted graphics instructions
+	// 	parseActions(graphicsInstructions, (err, actions) => {
+	// 		if (err) return showError('Graphics Instructions Parse Error', err.message);
 
-			// update the L-system instance
-			lsys.axiom = axiom;
-			lsys.productionRules = rules;
-			lsys.actions = actions;
-			lsys.iteration = iterations;
+	// 		// update the L-system instance
+	// 		lsys.axiom = axiom;
+	// 		lsys.productionRules = rules;
+	// 		lsys.actions = actions;
+	// 		lsys.iteration = iterations;
 
-			// calculate a new string to be displayed
-			lsys.calculateString();
-			renderLSys();
-		});
-	});
+	// 		// calculate a new string to be displayed
+	// 		lsys.calculateString();
+	// 		renderLSys();
+	// 	});
+	// });
 }
 
 // display an error to the user

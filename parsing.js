@@ -1,9 +1,7 @@
-/*
-  parsing.js: Functions for parsing the grammar inputted by the user
-*/
 
 class ContextRule {
-  constructor(l, r, replacements) {
+  constructor(c, l, r, replacements) {
+    this.char = c;
     this.left = l;
     this.right = r;
     this.replacements = replacements;
@@ -230,31 +228,31 @@ function parseRawText(rawText, cb) {
 
 /* -------------------------------------------- */
 
-let c = new ContextRule("X", contexts.NULL, ["X", "F"]);
+// let c = new ContextRule("X", contexts.NULL, ["X", "F"]);
 
-let c1 = "A";
-let r1 = new ContextRule("0", "1", ["B"]);
-let r2 = new ContextRule(contexts.NULL, contexts.NULL, ["C"]);
+// let c1 = "A";
+// let r1 = new ContextRule("0", "1", ["B"]);
+// let r2 = new ContextRule(contexts.NULL, contexts.NULL, ["C"]);
 
-let c2 = "B";
-let r3 = new ContextRule("3", "3", ["A", "C"]);
-let r4 = new ContextRule(contexts.INITIAL, contexts.NULL, ["C"]);
+// let c2 = "B";
+// let r3 = new ContextRule("3", "3", ["A", "C"]);
+// let r4 = new ContextRule(contexts.INITIAL, contexts.NULL, ["C"]);
 
-let c3 = "C";
-let r5 = new ContextRule("0", "2", ["A"]);
-let r6 = new ContextRule(contexts.NULL, "2", ["B"]);
-let r7 = new ContextRule(contexts.NULL, contexts.NULL, ["F"]);
+// let c3 = "C";
+// let r5 = new ContextRule("0", "2", ["A"]);
+// let r6 = new ContextRule(contexts.NULL, "2", ["B"]);
+// let r7 = new ContextRule(contexts.NULL, contexts.NULL, ["F"]);
 
-let p = new ProductionRules();
+// let p = new ProductionRules();
 
-p.addRule("A", r1);
-p.addRule("B", r3);
-p.addRule("A", r2);
-p.addRule("B", r4);
+// p.addRule("A", r1);
+// p.addRule("B", r3);
+// p.addRule("A", r2);
+// p.addRule("B", r4);
 
-p.addRule("C", r5);
-p.addRule("C", r6);
-p.addRule("C", r7);
+// p.addRule("C", r5);
+// p.addRule("C", r6);
+// p.addRule("C", r7);
 
 
 /*

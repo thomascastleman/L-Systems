@@ -17,7 +17,7 @@ class Lexer {
   }
 
   // Breaks input text into tokens, which must all be separated by whitespace
-  lex(text, cb) {
+  lex(text) {
     let tokens = [];
 
     while (text.length > 0) {
@@ -44,7 +44,7 @@ class Lexer {
 
       // failed to match any token patterns
       if (!chosenToken || !maximalMunchSize) {
-        return cb(new Error(`Invalid token near '${text}'`));
+        throw new Error(`Invalid token: '${this.retrieveInvalid(text)}'`);
       }
 
       // include all non-whitespace tokens
@@ -55,7 +55,16 @@ class Lexer {
       text = text.substring(maximalMunchSize);
     }
 
-    cb(null, tokens);
+    return tokens;
+  }
+
+  // read chars until whitespace from front of text
+  retrieveInvalid(text) {
+    let m = text.match(new RegExp('^[^\\s]*'));
+
+    if (!m || m.length < 1) return text;
+
+    return m[0];
   }
 
 }
