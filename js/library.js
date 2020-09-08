@@ -161,6 +161,19 @@ const hilbert = {
   iterations: 5 
 }
 
+const islands = {
+  axiom: 'F-F-F-F',
+  productionRules:
+    `F ==> F-f+FF-F-FF-Ff-FF+f-FF+F+FF+Ff+FFF\n` + 
+    `f ==> ffffff\n`,
+  graphics:
+    `F = forward\n` + 
+    `f = leap\n` + 
+    `+ = turn 90\n` + 
+    `- = turn -90\n`,
+  iterations: 2
+}
+
 /* ---------------------- Context-Sensitive ---------------------- */
 const tallPlant = {
   axiom: 'F0F1F1',

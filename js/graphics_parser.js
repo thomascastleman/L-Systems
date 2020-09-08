@@ -12,6 +12,7 @@
     | <block-start> <prim-op-block> <block-end>
 
   <prim-op> := <forward>
+    | <leap>
     | <turn>
     | <push>
     | <pop>
@@ -32,6 +33,7 @@ class GraphicsParser extends Parser {
     // block-start '{'
     // block-end '}'
     // forward 'forward <scale>'
+    // leap 'leap <scale>'
     // turn 'turn <angle>'
     // push 'push'
     // pop 'pop'
@@ -46,6 +48,7 @@ class GraphicsParser extends Parser {
       { re: new RegExp('^{'), name: 'block-start' },
       { re: new RegExp('^}'), name: 'block-end' },
       { re: new RegExp('^forward([^\\S\r\n]+(-?\\d*(\\.\\d*)?))?'), name: 'forward' },
+      { re: new RegExp('^leap([^\\S\r\n]+(-?\\d*(\\.\\d*)?))?'), name: 'leap' },
       { re: new RegExp('^turn[^\\S\r\n]+(-?\\d*(\\.\\d*)?)'), name: 'turn' },
       { re: new RegExp('^push'), name: 'push' },
       { re: new RegExp('^pop'), name: 'pop' },
@@ -62,7 +65,22 @@ class GraphicsParser extends Parser {
           if (match[2] == "" || match[2] == undefined)
             return new Token(pattern.name, 1);
 
-          let scale = parseFloat(match[2]);
+          var scale = parseFloat(match[2]);
+
+          if (isNaN(scale))
+            throw new Error(`Invalid scale factor: '${match[2]}'`);
+
+          return new Token(pattern.name, scale);
+
+        case 'leap':
+          if (match.length < 3)
+            throw new Error(`Failed to extract scale from '${match[0]}'`);
+
+          // if no scale factor given, default to 1
+          if (match[2] == "" || match[2] == undefined)
+            return new Token(pattern.name, 1);
+
+          var scale = parseFloat(match[2]);
 
           if (isNaN(scale))
             throw new Error(`Invalid scale factor: '${match[2]}'`);
@@ -173,10 +191,19 @@ class GraphicsParser extends Parser {
 
     switch (next.name) {
       case 'forward':
-        let scale = next.lexeme;
+        var scale = next.lexeme;
+
+        // draw line/step forward based on step size & user-indicated scale factor
         return () => {
-          // draw line/step forward based on step size & user-indicated scale factor
           line(0, STEP_LENGTH * scale, 0, 0);
+          translate(0, STEP_LENGTH * scale);
+        };
+
+      case 'leap':
+        var scale = next.lexeme;
+
+        // move without drawing a line
+        return () => {
           translate(0, STEP_LENGTH * scale);
         };
 
