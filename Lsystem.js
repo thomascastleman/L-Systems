@@ -7,7 +7,7 @@ class Lsystem {
   constructor() {
     this.axiom;
     this.productionRules;
-    this.actions;
+    this.graphicsInstructions;
     this.iteration = 10;
     this.Lstring = '';
   }
@@ -24,7 +24,11 @@ class Lsystem {
       // expand each symbol based on its production rules
       for (var c = 0; c < originalAxiom.length; c++){
         sym = originalAxiom[c];
-        let possibleRHS = this.productionRules[sym];
+
+        // lookup possible replacement strings for this symbol within this context
+        let leftCtxt = c == 0 ? contexts.INITIAL : originalAxiom[c - 1];
+        let rightCtxt = c == originalAxiom.length - 1 ? contexts.FINAL : originalAxiom[c + 1];
+        let possibleRHS = this.productionRules.lookup(sym, leftCtxt, rightCtxt);
 
         if (possibleRHS) {
           // select a random string from the possible righthand sides 
@@ -54,11 +58,11 @@ class Lsystem {
     for (var c = 0; c < this.Lstring.length; c++){
       var character = this.Lstring[c];
 
-      let action = this.actions[character];
+      let action = this.graphicsInstructions.lookup(character);
 
-      // if there are actions associated with this symbol
+      // if there is graphical meaning associated with this symbol
       if (action) {
-        // call each of the actions, in order, associated with this symbol
+        // call each of the associated graphics operations, in order
         for (let a = 0; a < action.length; a++) {
           action[a]();
         }

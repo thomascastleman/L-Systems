@@ -51,7 +51,7 @@ function loadLibraryItem(params) {
 	// update all params in the UI
 	$('#axiom').val(params.axiom);
 	$('#prod-rules').val(params.productionRules);
-	$('#graphics-instructs').val(params.actions);
+	$('#graphics-instructs').val(params.graphics);
 	$('#iterations').val(params.iterations);
 
 	makeLSystem();	// run everything
@@ -64,34 +64,36 @@ function makeLSystem() {
 
 	// extract raw text from inputs
 	const axiom = $('#axiom').val();
-	const productionRules = $('#prod-rules').val();
-	const graphicsInstructions = $('#graphics-instructs').val();
+	const prText = $('#prod-rules').val();
+	const giText = $('#graphics-instructs').val();
 	const iterations = parseInt($('#iterations').val(), 10);
 
 	if (isNaN(iterations) || iterations < 0) return showError('Iterations', 'Invalid number of iterations');
 	if (!axiom) return showError('Axiom', 'The axiom cannot be empty');
 
-	// WIP
-	
-	// // attempt to parse inputted production rules
-	// parseProductionRules(productionRules, (err, rules) => {
-	// 	if (err) return showError('Production Rule Parse Error', err.message);
+	try {
+		// parse production rules
+		lsys.productionRules = new ProductionParser(prText).parse();
 
-	// 	// attempt to parse inputted graphics instructions
-	// 	parseActions(graphicsInstructions, (err, actions) => {
-	// 		if (err) return showError('Graphics Instructions Parse Error', err.message);
+		try {
+			// parse graphics instructions
+			lsys.graphicsInstructions = new GraphicsParser(giText).parse();
 
-	// 		// update the L-system instance
-	// 		lsys.axiom = axiom;
-	// 		lsys.productionRules = rules;
-	// 		lsys.actions = actions;
-	// 		lsys.iteration = iterations;
+			// update rest of params
+			lsys.axiom = axiom;
+			lsys.iteration = iterations;
 
-	// 		// calculate a new string to be displayed
-	// 		lsys.calculateString();
-	// 		renderLSys();
-	// 	});
-	// });
+			// calculate a new string to be displayed
+			lsys.calculateString();
+			renderLSys();
+
+		} catch (e) {
+			return showError('Graphics Instructions Error', e.message);
+		}
+
+	} catch (e) {
+		return showError('Production Rule Error', e.message);
+	}
 }
 
 // display an error to the user

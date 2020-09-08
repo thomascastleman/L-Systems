@@ -38,12 +38,15 @@ class GraphicsParser extends Parser {
     // char [^\\s{}]
     // whitespace
 
+    // matching whitespace without newlines in forward/turn from:
+    // https://stackoverflow.com/questions/3469080/match-whitespace-but-not-newlines
+
     let lexer = new Lexer([
       { re: new RegExp('^='), name: 'equals' },
       { re: new RegExp('^{'), name: 'block-start' },
       { re: new RegExp('^}'), name: 'block-end' },
-      { re: new RegExp('^forward(\\s+(-?\\d*(\\.\\d*)?))?'), name: 'forward' },
-      { re: new RegExp('^turn\\s+(-?\\d*(\\.\\d*)?)'), name: 'turn' },
+      { re: new RegExp('^forward([^\\S\r\n]+(-?\\d*(\\.\\d*)?))?'), name: 'forward' },
+      { re: new RegExp('^turn[^\\S\r\n]+(-?\\d*(\\.\\d*)?)'), name: 'turn' },
       { re: new RegExp('^push'), name: 'push' },
       { re: new RegExp('^pop'), name: 'pop' },
       { re: new RegExp('^([^\\s{}])'), name: 'char' },
@@ -56,7 +59,7 @@ class GraphicsParser extends Parser {
             throw new Error(`Failed to extract scale from '${match[0]}'`);
 
           // if no scale factor given, default to 1
-          if (match[2] == "")
+          if (match[2] == "" || match[2] == undefined)
             return new Token(pattern.name, 1);
 
           let scale = parseFloat(match[2]);
@@ -67,8 +70,6 @@ class GraphicsParser extends Parser {
           return new Token(pattern.name, scale);
 
         case 'turn':
-          console.log(match);
-
           if (match.length < 2)
             throw new Error(`Failed to extract rotation angle from '${match[0]}'`);
 
