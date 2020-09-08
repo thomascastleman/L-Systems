@@ -1,7 +1,1 @@
 To do.
-
-- extend L system lang
-  - support ignoring of symbols when looking for context
-
-misc:
-  - support custom bg color

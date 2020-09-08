@@ -14,6 +14,12 @@ $(document).ready( function() {
 		renderLSys();
 	});
 
+	// on color input change, redraw the L system with that line color
+	$('#bg-color').change(() => {
+		BG = color(document.getElementById('bg-color').value);
+		renderLSys();
+	});
+
 	// hide/show the controls when button clicked
 	$('#toggle-ui').click(() => {
 		$('#controls-wrapper').slideToggle();

@@ -17,6 +17,12 @@ div {
 	font-family: Lucida Sans Unicode;
 }
 
+h5 {
+	margin: 0;
+	margin-top: 10px;
+	font-size: 14px;
+}
+
 #left {
 	width: 330px;
 	float:left;
@@ -86,6 +92,7 @@ textarea {
 
 #toggle-ui {
 	clear: both;
+	width: 90%;
 }
 
 #toggle-ui:hover {

@@ -158,3 +158,26 @@ const hilbert = {
     `- = turn -90\n`,
   iterations: 5 
 }
+
+const sensitivePlant = {
+  axiom: 'F0F1F1',
+  ignore: '-+F[]',
+  productionRules: 
+    `0 < 0 > 0 ==> 1\n` +
+    `0 < 0 > 1 ==> 0\n` +
+    `0 < 1 > 0 ==> 0\n` +
+    `0 < 1 > 1 ==> 1F1\n` +
+    `1 < 0 > 0 ==> 0\n` +
+    `1 < 0 > 1 ==> 1[+F1F1]\n` +
+    `1 < 1 > 0 ==> 1\n` +
+    `1 < 1 > 1 ==> 0\n` +
+    `- ==> +\n` +
+    `+ ==> -\n`,
+  graphics:
+    `F = forward 0.3\n` +
+    `+ = turn 24\n` +
+    `- = turn -16\n` +
+    `[ = push\n` +
+    `] = pop\n`,
+  iterations: 24
+}
